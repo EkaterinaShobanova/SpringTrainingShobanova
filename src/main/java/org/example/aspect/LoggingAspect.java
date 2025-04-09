@@ -12,6 +12,7 @@ import org.aspectj.lang.annotation.Aspect;
 @Component
 @Slf4j
 public class LoggingAspect {
+
     @Before("execution(* org.example.service.TaskService.*(..))")
     public void logBefore(JoinPoint joinPoint) {
         log.info("Before: Method {} called with args: {}",
@@ -21,36 +22,48 @@ public class LoggingAspect {
 
 
     @AfterThrowing(
-            pointcut = "execution(* org.example.*.*(..))",
+            pointcut = "execution(* org.example.service.*.*(..)) || " +
+                    "execution(* org.example.kafka.*.*(..))",
             throwing = "ex"
     )
     public void logAfterThrowing(JoinPoint joinPoint, Throwable ex) {
-        log.error("AfterThrowing: Method {} threw exception: {}",
-                joinPoint.getSignature().getName(),
+        log.error("Exception in {}: {} - {}",
+                joinPoint.getSignature().toShortString(),
+                ex.getClass().getSimpleName(),
                 ex.getMessage());
     }
 
-
+    // Логируем только публичные методы контроллеров
     @AfterReturning(
-            pointcut = "execution(* org.example.*.*(..))",
+            pointcut = "execution(public * org.example.controller.*.*(..))",
             returning = "result"
     )
     public void logAfterReturning(JoinPoint joinPoint, Object result) {
-        log.info("AfterReturning: Method {} returned: {}",
-                joinPoint.getSignature().getName(),
-                result);
+        if (log.isDebugEnabled()) {
+            log.debug("Controller {} returned: {}",
+                    joinPoint.getSignature().getName(),
+                    result != null ? result.toString() : "null");
+        }
     }
 
-
-    @Around("execution(* org.example.*.*(..))")
-    public Object logAround(ProceedingJoinPoint joinPoint) throws Throwable {
+    // Замеряем время выполнения только бизнес-методов
+    @Around("execution(* org.example.service.*Service.*(..)) || " +
+            "execution(* org.example.repository.*Repository.*(..))")
+    public Object logExecutionTime(ProceedingJoinPoint joinPoint) throws Throwable {
         long startTime = System.currentTimeMillis();
-        Object result = joinPoint.proceed();
-        long duration = System.currentTimeMillis() - startTime;
-        log.info("Around: Method {} executed in {} ms",
-                joinPoint.getSignature().getName(),
-                duration);
-        return result;
+        try {
+            Object result = joinPoint.proceed();
+            if (log.isDebugEnabled()) {
+                log.debug("Method {} executed in {} ms",
+                        joinPoint.getSignature().toShortString(),
+                        System.currentTimeMillis() - startTime);
+            }
+            return result;
+        } catch (Throwable ex) {
+            log.error("Execution failed in {} after {} ms",
+                    joinPoint.getSignature().toShortString(),
+                    System.currentTimeMillis() - startTime);
+            throw ex;
+        }
     }
-
 }
