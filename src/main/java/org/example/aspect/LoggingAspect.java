@@ -20,12 +20,12 @@ public class LoggingAspect {
                 joinPoint.getArgs());
     }
 
-
     @AfterThrowing(
             pointcut = "execution(* org.example.service.*.*(..)) || " +
                     "execution(* org.example.kafka.*.*(..))",
             throwing = "ex"
     )
+
     public void logAfterThrowing(JoinPoint joinPoint, Throwable ex) {
         log.error("Exception in {}: {} - {}",
                 joinPoint.getSignature().toShortString(),
@@ -33,7 +33,6 @@ public class LoggingAspect {
                 ex.getMessage());
     }
 
-    // Логируем только публичные методы контроллеров
     @AfterReturning(
             pointcut = "execution(public * org.example.controller.*.*(..))",
             returning = "result"
@@ -46,7 +45,6 @@ public class LoggingAspect {
         }
     }
 
-    // Замеряем время выполнения только бизнес-методов
     @Around("execution(* org.example.service.*Service.*(..)) || " +
             "execution(* org.example.repository.*Repository.*(..))")
     public Object logExecutionTime(ProceedingJoinPoint joinPoint) throws Throwable {

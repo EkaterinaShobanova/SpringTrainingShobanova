@@ -12,32 +12,34 @@ spring:
 
   aop:
     auto: true
+
   mail:
     host: smtp.gmail.com
     port: 587
-    username:
+    username: example@gmail.com
     password:
     properties:
-      mail.smtp:
-        auth: true
-        starttls.enable: true
-        ssl.trust: smtp.gmail.com
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+          ssl:
+            trust: "smtp.gmail.com"
+
   kafka:
     bootstrap-servers: localhost:9092
 
     producer:
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
       acks: all
-
     consumer:
       group-id: spring-aop-group
       auto-offset-reset: earliest
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:
-        spring.json.trusted.packages:
-
+        spring.json.trusted.packages: "*"
     admin:
       auto-create: true
 
@@ -48,3 +50,8 @@ logging:
         aspect: DEBUG
     org.apache.kafka: INFO
     org.springframework.kafka: DEBUG
+
+notification:
+  email:
+    recipient: example@gmail.com
+  topic: task-status-updates

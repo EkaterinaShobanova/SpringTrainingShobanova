@@ -25,25 +25,8 @@ public class Task {
     private Long userId;
 
     @Column(nullable = false)
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private TaskStatus status;
 
-    public static Task fromDto(TaskDto dto) {
-        Task task = new Task();
-        task.setId(dto.taskId());
-        task.setTitle(dto.title());
-        task.setDescription(dto.description());
-        task.setUserId(dto.userid());
-        task.setStatus(dto.status());
-        return task;
-    }
 
-    public TaskDto toDto() {
-        return new TaskDto(
-                this.id,
-                this.title,
-                this.description,
-                this.userId,
-                this.status
-        );
-    }
 }
