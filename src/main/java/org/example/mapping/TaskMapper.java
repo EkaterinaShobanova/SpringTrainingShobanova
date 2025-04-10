@@ -3,11 +3,9 @@ package org.example.mapping;
 import org.example.dto.TaskDto;
 import org.example.entity.Task;
 import org.mapstruct.*;
-import org.mapstruct.factory.Mappers;
 
-@Mapper
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface TaskMapper {
-    TaskMapper INSTANCE = Mappers.getMapper(TaskMapper.class);
 
     @Mapping(source = "taskId", target = "id")
     Task fromDto(TaskDto dto);
