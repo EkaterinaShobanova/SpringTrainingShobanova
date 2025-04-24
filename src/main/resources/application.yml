@@ -1,0 +1,57 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/spring_aop
+    username:
+    password:
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+  aop:
+    auto: true
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: example@gmail.com
+    password:
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+          ssl:
+            trust: "smtp.gmail.com"
+
+  kafka:
+    bootstrap-servers: localhost:9092
+
+    producer:
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      acks: all
+    consumer:
+      group-id: spring-aop-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "*"
+    admin:
+      auto-create: true
+
+logging:
+  level:
+    org:
+      example:
+        aspect: DEBUG
+    org.apache.kafka: INFO
+    org.springframework.kafka: DEBUG
+
+notification:
+  email:
+    recipient: example@gmail.com
+  topic: task-status-updates
