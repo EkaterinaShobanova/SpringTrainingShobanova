@@ -16,6 +16,10 @@ public class TaskStatusProducer {
 
     private final KafkaTemplate<String, TaskStatusUpdateDto> kafkaTemplate;
 
+    void setTopic(String topic) {
+        this.topic = topic;
+    }
+
     public TaskStatusProducer(KafkaTemplate<String, TaskStatusUpdateDto> kafkaTemplate) {
         this.kafkaTemplate = kafkaTemplate;
     }
